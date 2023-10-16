@@ -1,5 +1,5 @@
 # Tiny URL App
-This is a tiny url app created as a side project.
+This is a tiny url app created as a side project to learn a bit more about JS backend frameworks.
 
 ## Create database
 Run mongodb in docker using docker-compose up -d from project root
