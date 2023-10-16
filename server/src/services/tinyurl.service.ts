@@ -29,7 +29,7 @@ const findOriginalUrl = async (tinyUrl: string): Promise<string | null> => {
  * @param originalUrl the original url provided by the user
  * @returns a promise containing the newly created {@link TinyUrlDocument}
  */
-const addTinyUrl = async (originalUrl: string): Promise<TinyUrlDocument> => {
+const addTinyUrl = async (originalUrl: string): Promise<string> => {
     // Get latest counter
     const currentCounter = await getCounter();
     let sequence = currentCounter && currentCounter.sequence + 1 || 0;
@@ -40,19 +40,24 @@ const addTinyUrl = async (originalUrl: string): Promise<TinyUrlDocument> => {
     const md5Hash = crypto.createHash('md5');
     const sequenceMd5Hash = md5Hash.update(sequence.toString()).digest('hex');
     const sequenceBase64 = Buffer.from(sequenceMd5Hash).toString('base64');
-    const shortUrl = sequenceBase64.slice(0, 7);
+    const shortHash = sequenceBase64.slice(0, 7);
 
     // Create new tiny url document
     const tinyUrl = await TinyUrl.create({
         _id: sequence,
-        shortUrl: shortUrl,
+        shortUrl: shortHash,
         fullUrl: originalUrl
     });
 
     // Update counter
     await addCounter();
 
-    return tinyUrl;
+    // Generate full short url based on environment
+    const shortUrl = process.env.NODE_ENV === 'development' ?
+        `http://localhost:${process.env.CLIENT_PORT}/r/${shortHash}` : 
+        `${process.env.BASE_PATH}/r/${shortHash}`;
+
+    return shortUrl;
 };
 
 export { findTinyUrls, findOriginalUrl, addTinyUrl };
