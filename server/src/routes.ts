@@ -17,7 +17,7 @@ const routes = (app: Express) => {
     .post(createTinyUrl);
 
     // Redirect Url route
-    app.get('/:tinyUrl', handleRedirect);
+    app.get('/r/:tinyUrl', handleRedirect);
 
     // Catch all for unmatched routes
     app.all('*', (_: Request, res: Response) => {
